@@ -44,7 +44,7 @@ from operator import or_
 from copy import copy
 
 import sqlalchemy as sa
-from sqlalchemy import orm
+from sqlalchemy import orm, literal
 from sqlalchemy.sql.expression import true, exists, bindparam
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
@@ -260,8 +260,14 @@ def buildReportTable(session, data_dict):
         alias_name = type_ + '_' + column.name
         value_class = orm.aliased(storage.nameModelMap[type_], name=alias_name)
         value_column = value_class._value
+
+        if type_ == 'blob':
+            query = query.add_column(literal(u'[FILE]').label(column.name))
+            continue
+
         if type_ == 'boolean':
             value_column = sa.cast(value_class._value, sa.Boolean)
+
         elif type_ == 'date':
             # sqlite handles datetimes weirdly
             value_column = (getattr(sa.func, type_)(value_class._value)
