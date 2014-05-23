@@ -44,8 +44,8 @@ from operator import or_
 from copy import copy
 
 import sqlalchemy as sa
-from sqlalchemy import orm, literal
-from sqlalchemy.sql.expression import true, exists, bindparam
+from sqlalchemy import orm, literal, null
+from sqlalchemy.sql.expression import true, exists, bindparam, case
 from zope.schema.vocabulary import SimpleVocabulary, SimpleTerm
 
 from . import model
@@ -261,10 +261,6 @@ def buildReportTable(session, data_dict):
         value_class = orm.aliased(storage.nameModelMap[type_], name=alias_name)
         value_column = value_class._value
 
-        if type_ == 'blob':
-            query = query.add_column(literal(u'[FILE]').label(column.name))
-            continue
-
         if type_ == 'boolean':
             value_column = sa.cast(value_class._value, sa.Boolean)
 
@@ -309,6 +305,9 @@ def buildReportTable(session, data_dict):
                     .correlate(entity_class)
                     .as_scalar())
         else:
+            if type_ == 'blob':
+                value_column = case([((value_column != null()), literal(u'[FILE]'))], else_=null())
+
             # Scalar columns are added via LEFT OUTER JOIN
             query = query.outerjoin(value_class, filter_expression)
 
