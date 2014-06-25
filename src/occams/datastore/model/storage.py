@@ -473,11 +473,11 @@ def validateValue(target, value, oldvalue, initiator):
     if attribute.choices:
         found = None
         for choice in attribute.choices:
-            if choice.value == value:
+            if choice.value == str(value):
                 found = choice
                 break
         if not found:
-            raise ConstraintError(attribute.schema.name, attribute.name, [c.value for c in attribute.choices], value)
+            raise ConstraintError(attribute.schema.name, attribute.name, [c.value for c in attribute.choices], str(value))
 
         target.choice = choice
 
