@@ -7,14 +7,19 @@ import sys
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 REQUIRES = [
-    'alembic',
-    'six',
-    'SQLAlchemy>=1.0.0,<1.0.99'
+    'alembic==0.9.*',
+    'six==1.*',
+    'SQLAlchemy==1.0.*',
 ]
 
 EXTRAS = {
-    'postgresql': ['psycopg2'],
-    'test': ['pytest', 'pytest-cov'],
+    'postgresql': [
+        'psycopg2==2.7.*'
+    ],
+    'test': [
+        'pytest==3.*',
+        'pytest-cov==2.*'
+    ],
 }
 
 
